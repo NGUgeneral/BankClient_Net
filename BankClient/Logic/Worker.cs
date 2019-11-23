@@ -10,45 +10,87 @@ namespace BankClient.Logic
 {
   class Worker
   {
-    //create 50 clients
-    //closure/print total ballance
-    //create 10 threads
-    //run 1000000 transfer operations for each thread with random amount
-    //print and compare total ballance afterwards
-
-    private readonly Bank Bank;
+    private readonly Bank _bank;
+    private readonly Random _random;
+    private long _incomeAmount;
 
     public Worker()
     {
-      Bank = new Bank();
+      _bank = new Bank();
+      _random = new Random();
+      _incomeAmount = 0;
     }
 
     internal void Run()
     {
-      Console.WriteLine("Creating client instance ...");
-      var client1 = new Client(Bank);
-      Console.WriteLine("Client instance created successfully!");
-      Console.WriteLine("Attempting to put money on balance ...");
-      if (client1.PutOnBalance(1000000))
+      CreateClients(50);
+      PutMoneyOnAccounts(3);
+      MakeTransfers(1000000);
+
+      _bank.Status(_incomeAmount);
+    }
+
+    private void CreateClients(int n)
+    {
+      var tasks = new List<Task>();
+      for (int i = 0; i < n; i++)
       {
-        Console.WriteLine("Money putted on balance successfully!");
-      }
-      else
-      {
-        Console.WriteLine("Failed to put money on balance.");
+        tasks.Add(new Task(() => new Client(_bank, _random)));
       }
 
-      Console.WriteLine("Attempting to withdraw money from balance ...");
-      if (client1.WithdrawFromBalance(5000))
+      foreach (var task in tasks)
       {
-        Console.WriteLine("Money withdrawn from balance successfully!");
+        task.Start();
       }
-      else
+    }
+
+    private void PutMoneyOnAccounts(int n)
+    {
+      var tasks = new List<Task>();
+
+      var clients = _bank.GetClients();
+      
+
+      foreach (var client in clients)
       {
-        Console.WriteLine("Failed to withdraw money on balance.");
+        for (int i = 0; i < n; i++)
+        {
+          var amount = _random.Next(1, 1000000);
+          _incomeAmount += amount;
+          tasks.Add(new Task(() => client.PutOnBalance(amount)));
+        }
       }
 
-      Bank.Status();
+      Console.WriteLine($"Income amount: {_incomeAmount}");
+
+      foreach (var task in tasks)
+      {
+        task.Start();
+      }
+    }
+
+    private void MakeTransfers(int n)
+    {
+      var tasks = new List<Task>();
+      var clientsCount = _bank.GetClientsCount();
+
+      for (int i = 0; i < n; i++)
+      {
+        long amount = _random.Next(0, 1000000);
+        int fromId = _random.Next(0, clientsCount);
+        int toId = _random.Next(0, clientsCount);
+        while (fromId == toId)
+        {
+          toId = _random.Next(0, clientsCount);
+        }
+
+        tasks.Add(new Task(() => _bank.Transfer(fromId, toId, amount)));
+      }
+
+      foreach (var task in tasks)
+      {
+        task.Start();
+      }
     }
   }
 }

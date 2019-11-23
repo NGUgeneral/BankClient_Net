@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Runtime.InteropServices;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -73,6 +74,7 @@ namespace BankClient.Models
           return false;
         }
       }
+      
       return true;
     }
 
@@ -91,10 +93,26 @@ namespace BankClient.Models
       return true;
     }
 
-    internal void Status()
+    internal void Status(long income)
     {
+      long capital = Accounts.Sum(x => x.Value.Balance);
       Console.WriteLine($@"Accounts: {Accounts.Count}");
-      Console.WriteLine($@"Money: {Accounts.Values.Sum(x => x.Balance)}");
+      Console.WriteLine($@"Capital: {capital}");
+      Console.WriteLine($@"All good: {capital == income}");
     }
+
+    #region Helpers
+
+    public List<Client> GetClients()
+    {
+      return Clients.Values.ToList();
+    }
+
+    public int GetClientsCount()
+    {
+      return Clients.Count;
+    }
+
+    #endregion
   }
 }

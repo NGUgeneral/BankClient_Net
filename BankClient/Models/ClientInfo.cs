@@ -18,11 +18,10 @@ namespace BankClient.Models
       BirthDate = birthDate;
     }
 
-    public ClientInfo(bool insertDummyInfo)
+    public ClientInfo(Random random, bool insertDummyInfo)
     {
       if (insertDummyInfo)
       {
-        Random random = new Random();
         int index = random.Next(FirstNames.Count);
         FirstName = FirstNames[index];
         index = random.Next(LastNames.Count);

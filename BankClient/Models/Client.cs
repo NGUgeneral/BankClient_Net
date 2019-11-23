@@ -12,9 +12,9 @@ namespace BankClient.Models
     private Bank ClientBank;
     public ClientInfo Info;
 
-    public Client(Bank bank)
+    public Client(Bank bank, Random random)
     {
-      Info = new ClientInfo(true);
+      Info = new ClientInfo(random, true);
       ClientBank = bank;
       Id = ClientBank.RegisterClient(this);
       CreateAccount();
