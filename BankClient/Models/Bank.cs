@@ -90,5 +90,11 @@ namespace BankClient.Models
 
       return true;
     }
+
+    internal void Status()
+    {
+      Console.WriteLine($@"Accounts: {Accounts.Count}");
+      Console.WriteLine($@"Money: {Accounts.Values.Sum(x => x.Balance)}");
+    }
   }
 }

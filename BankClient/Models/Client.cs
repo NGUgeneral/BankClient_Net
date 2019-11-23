@@ -17,6 +17,7 @@ namespace BankClient.Models
       Info = new ClientInfo(true);
       ClientBank = bank;
       Id = ClientBank.RegisterClient(this);
+      CreateAccount();
     }
 
     public bool CreateAccount()
